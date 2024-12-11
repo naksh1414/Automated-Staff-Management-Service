@@ -4,15 +4,22 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middlewares/error.middleware";
 import { Database } from "./config/database";
+import amqp from "amqplib";
+import { RabbitMQClient } from "./config/rabbitmq2";
+import { EventConsumer } from "./config/rabbitmq2";
 // Import routes
 import staffRoutes from "./routes/staff.routes";
 
 export class App {
   public app: Application;
   private database: Database;
+  private rabbitmqClient: RabbitMQClient;
+  private eventConsumer: EventConsumer;
   constructor() {
     this.app = express();
     this.database = Database.getInstance();
+    this.rabbitmqClient = RabbitMQClient.getInstance();
+    this.eventConsumer = EventConsumer.getInstance();
     console.log("📱 Initializing application...");
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -26,6 +33,41 @@ export class App {
     } catch (error) {
       console.error("❌ Database initialization failed:", error);
       process.exit(1);
+    }
+  }
+
+  private async initializeMessageQueue(): Promise<void> {
+    try {
+      console.log("🐰 Initializing CloudAMQP connection...");
+      await this.rabbitmqClient.initialize();
+
+      // Set up consumers
+      await this.eventConsumer.startConsuming(
+        "staff_events",
+        async (message) => {
+          console.log("📬 Received staff event:", message);
+          // Handle staff events
+          switch (message.action) {
+            case "created":
+              // Handle staff created
+              break;
+            case "updated":
+              // Handle staff updated
+              break;
+            case "deleted":
+              // Handle staff deleted
+              break;
+            case "status_changed":
+              // Handle staff status changed
+              break;
+          }
+        }
+      );
+
+      console.log("✅ CloudAMQP initialized successfully");
+    } catch (error) {
+      console.error("❌ Failed to initialize CloudAMQP:", error);
+      throw error;
     }
   }
 
@@ -124,6 +166,7 @@ export class App {
   public async listen(): Promise<void> {
     try {
       await this.initializeDatabase();
+      await this.initializeMessageQueue();
       const port = process.env.PORT || 3000;
       this.app.listen(port, () => {
         console.log("================================================");
@@ -138,6 +181,12 @@ export class App {
           platform: process.platform,
           memoryUsage: process.memoryUsage(),
           cpuUsage: process.cpuUsage(),
+        });
+
+        process.on("SIGTERM", async () => {
+          console.log("🛑 SIGTERM received. Closing connections...");
+          await this.rabbitmqClient.closeConnection();
+          process.exit(0);
         });
       });
     } catch (error) {
