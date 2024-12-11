@@ -31,7 +31,8 @@ export class RabbitMQClient {
   private async createConnection(): Promise<void> {
     try {
       // Get CloudAMQP URL from environment variables
-      const amqpUrl = process.env.CLOUDAMQP_URL || process.env.RABBITMQ_URL;
+      const amqpUrl =
+        "amqps://ijkrsadb:L70-2AHWZjsJsX6UUN0L1Vz6N0VsL_Pd@rabbit.lmq.cloudamqp.com/ijkrsadb";
 
       if (!amqpUrl) {
         throw new Error(
@@ -41,6 +42,8 @@ export class RabbitMQClient {
 
       // Connect to CloudAMQP
       this.connection = await amqp.connect(amqpUrl);
+
+      console.log("Successfully connected to CloudAMQP");
 
       // Create channel
       this.channel = await this.connection.createChannel();

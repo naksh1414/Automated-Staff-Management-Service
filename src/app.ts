@@ -4,7 +4,6 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { errorHandler } from "./middlewares/error.middleware";
 import { Database } from "./config/database";
-import amqp from "amqplib";
 import { RabbitMQClient } from "./config/rabbitmq2";
 import { EventConsumer } from "./config/rabbitmq2";
 // Import routes
@@ -40,34 +39,13 @@ export class App {
     try {
       console.log("🐰 Initializing CloudAMQP connection...");
       await this.rabbitmqClient.initialize();
-
-      // Set up consumers
-      await this.eventConsumer.startConsuming(
-        "staff_events",
-        async (message) => {
-          console.log("📬 Received staff event:", message);
-          // Handle staff events
-          switch (message.action) {
-            case "created":
-              // Handle staff created
-              break;
-            case "updated":
-              // Handle staff updated
-              break;
-            case "deleted":
-              // Handle staff deleted
-              break;
-            case "status_changed":
-              // Handle staff status changed
-              break;
-          }
-        }
-      );
-
       console.log("✅ CloudAMQP initialized successfully");
     } catch (error) {
       console.error("❌ Failed to initialize CloudAMQP:", error);
-      throw error;
+      // Don't throw error, allow app to start without RabbitMQ
+      console.log(
+        "⚠️ Application will start without message queue functionality"
+      );
     }
   }
 
