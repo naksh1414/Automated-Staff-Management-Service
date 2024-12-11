@@ -9,6 +9,24 @@ export class StaffController {
     this.staffService = new StaffService();
   }
 
+  async loginStaff(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await this.staffService.loginAsStaff(req.body);
+      res.json(result);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  async registerStaff(req: Request, res: Response): Promise<void> {
+    try {
+      const staff = await this.staffService.registerStaff(req.body);
+      res.status(201).json(staff);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
   async createStaff(req: Request, res: Response): Promise<void> {
     try {
       const staff = await this.staffService.createStaff(req.body);

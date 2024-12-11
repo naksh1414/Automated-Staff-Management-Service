@@ -9,6 +9,21 @@ export interface IStaff {
   status: StaffStatus;
   createdAt: Date;
   updatedAt: Date;
+  password: string;
+}
+
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+export interface CreateStaffDTO {
+  name: string;
+  email: string;
+  password: string;
+  role?: StaffRole;
+  contactNumber?: string;
+  gender?: string;
+  status: StaffStatus;
 }
 
 export enum StaffRole {
@@ -19,7 +34,7 @@ export enum StaffRole {
 
 export enum StaffStatus {
   ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE"
+  INACTIVE = "INACTIVE",
 }
 
 export interface ICreateStaffDto {
@@ -33,4 +48,8 @@ export interface IUpdateStaffDto extends Partial<ICreateStaffDto> {
   assignedBusId?: string;
   assignedRouteId?: string;
   status?: StaffStatus;
+}
+
+export interface AuthTokenPayload {
+  userId: string;
 }

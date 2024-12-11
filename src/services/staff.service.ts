@@ -4,7 +4,11 @@ import {
   ICreateStaffDto,
   IUpdateStaffDto,
   StaffStatus,
+  LoginDTO,
+  CreateStaffDTO,
 } from "../types/staff.types";
+import { JWTUtil } from "../utils/jwt";
+import { PasswordUtil } from "../utils/password";
 import { CustomError } from "../utils/custom-error";
 import { validateStaffData } from "../validators/staff.validator";
 import { Logger } from "../utils/logger";
@@ -15,6 +19,67 @@ export class StaffService {
 
   constructor() {
     this.logger = new Logger("StaffService");
+  }
+
+  async loginAsStaff(loginData: LoginDTO): Promise<object> {
+    try {
+      const staff = await Staff.findOne({ email: loginData.email }).select(
+        "+password"
+      );
+
+      if (!staff) {
+        throw new CustomError("Staff not found", 404);
+      }
+
+      const isValidPassword = await PasswordUtil.compare(
+        loginData.password,
+        staff.password
+      );
+
+      if (!isValidPassword) {
+        throw new CustomError("Invalid password", 400);
+      }
+
+      const token = JWTUtil.generateToken({
+        userId: staff._id.toString(),
+      });
+
+      await publishEvent("staff.loggedin", {
+        staffId: staff.id,
+        email: staff.email,
+      });
+
+      return {
+        staff,
+        token,
+      };
+    } catch (error) {
+      this.logger.error(`Error logging in as staff ${loginData.email}:`, error);
+      throw error;
+    }
+  }
+
+  async registerStaff(staffData: CreateStaffDTO) {
+    try {
+      const existingStaff = await Staff.findOne({ email: staffData.email });
+      if (existingStaff) {
+        throw new CustomError("Staff with this email already exists", 409);
+      }
+      const hashedPassword = await PasswordUtil.hash(staffData.password);
+      const staff = new Staff({
+        ...staffData,
+        password: hashedPassword,
+      });
+      await staff.save();
+
+      await publishEvent("staff.register", {
+        staffId: staff.id,
+        email: staff.email,
+      });
+      return staff.toObject();
+    } catch (error) {
+      console.error("Error registering staff:", error);
+    }
   }
 
   async createStaff(staffData: ICreateStaffDto): Promise<IStaff> {

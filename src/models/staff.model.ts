@@ -5,6 +5,7 @@ const StaffSchema = new Schema<IStaff>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    password: { type: String},
     role: {
       type: String,
       enum: Object.values(StaffRole),
@@ -28,4 +29,4 @@ StaffSchema.index({ status: 1 });
 StaffSchema.index({ assignedBusId: 1 });
 StaffSchema.index({ assignedRouteId: 1 });
 
-export const Staff = model<IStaff>('Staff', StaffSchema);
+export const Staff = model<IStaff>("Staff", StaffSchema);

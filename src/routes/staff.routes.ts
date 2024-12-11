@@ -6,6 +6,10 @@ import { validateRole } from "../middlewares/role.middleware";
 const router = Router();
 const staffController = new StaffController();
 
+router.post("/login", staffController.loginStaff.bind(staffController));
+
+router.post("/register", staffController.registerStaff.bind(staffController));
+
 router.post(
   "/",
   authenticate,
