@@ -218,6 +218,7 @@ export class StaffService {
       }
 
       staff.assignedBusId = busId;
+      console.log("staff", staff);
       await staff.save();
 
       // Publish staff assigned event

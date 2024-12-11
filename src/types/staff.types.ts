@@ -42,6 +42,7 @@ export interface ICreateStaffDto {
   email: string;
   role: StaffRole;
   contactNumber: string;
+  password: string;
 }
 
 export interface IUpdateStaffDto extends Partial<ICreateStaffDto> {

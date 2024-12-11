@@ -21,6 +21,7 @@ const staffSchema = Joi.object({
   status: Joi.string()
     .valid(...Object.values(StaffStatus))
     .optional(),
+  password: Joi.string().required(),
 });
 
 export const validateStaffData = async (

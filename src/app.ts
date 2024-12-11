@@ -58,9 +58,9 @@ export class App {
 
     this.app.use(
       cors({
-        origin: "http://localhost:3000/",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
       })
     );
     console.log("🌐 CORS middleware initialized");
@@ -145,7 +145,7 @@ export class App {
     try {
       await this.initializeDatabase();
       await this.initializeMessageQueue();
-      const port = process.env.PORT || 3000;
+      const port = process.env.PORT || 3030;
       this.app.listen(port, () => {
         console.log("================================================");
         console.log(`🚀 Server running on port ${port}`);
