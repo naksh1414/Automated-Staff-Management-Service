@@ -10,6 +10,8 @@ export interface IStaff {
   createdAt: Date;
   updatedAt: Date;
   password: string;
+  shiftDuration: number;
+  shiftType: ShiftType;
 }
 
 export interface LoginDTO {
@@ -30,6 +32,10 @@ export enum StaffRole {
   DRIVER = "DRIVER",
   CONDUCTOR = "CONDUCTOR",
   ADMIN = "ADMIN",
+}
+export enum ShiftType {
+  NIGHT = "NIGHT",
+  DAY = "DAY",
 }
 
 export enum StaffStatus {

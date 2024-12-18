@@ -1,11 +1,16 @@
 import { Schema, model } from "mongoose";
-import { IStaff, StaffRole, StaffStatus } from "../types/staff.types";
+import {
+  IStaff,
+  StaffRole,
+  StaffStatus,
+  ShiftType,
+} from "../types/staff.types";
 
 const StaffSchema = new Schema<IStaff>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String},
+    password: { type: String },
     role: {
       type: String,
       enum: Object.values(StaffRole),
@@ -18,6 +23,14 @@ const StaffSchema = new Schema<IStaff>(
       type: String,
       enum: Object.values(StaffStatus),
       default: StaffStatus.ACTIVE,
+    },
+    shiftDuration: {
+      type: Number,
+    },
+    shiftType: {
+      type: String,
+      enum: ShiftType,
+      default: ShiftType.DAY,
     },
   },
   { timestamps: true }
