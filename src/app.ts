@@ -145,7 +145,7 @@ export class App {
     try {
       await this.initializeDatabase();
       await this.initializeMessageQueue();
-      const port = process.env.PORT || 3030;
+      const port = process.env.PORT || 3002;
       this.app.listen(port, () => {
         console.log("================================================");
         console.log(`🚀 Server running on port ${port}`);
