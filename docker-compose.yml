@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - MONGODB_URI=mongodb+srv://nakshatramanglik14:naksh1414@cluster0.3lrl1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - CLOUDAMQP_URL=amqps://ijkrsadb:L70-2AHWZjsJsX6UUN0L1Vz6N0VsL_Pd@rabbit.lmq.cloudamqp.com/ijkrsadb
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
